@@ -1,0 +1,246 @@
+diff --git a/XMPCore/build/CMakeListsCommon.txt b/XMPCore/build/CMakeListsCommon.txt
+index db06d91..8f290c4 100644
+--- a/XMPCore/build/CMakeListsCommon.txt
++++ b/XMPCore/build/CMakeListsCommon.txt
+@@ -88,18 +88,6 @@ list (REMOVE_ITEM CORECLASS_SOURCE_FILES ${SOURCE_ROOT}/XMPCore_Impl.cpp)
+ source_group("Source Files\\Core Classes" FILES ${CORECLASS_SOURCE_FILES})
+ 
+ file (GLOB ZUID_SOURCE_FILES ${TP_ZUID_PATH}/*.cpp)
+-list (APPEND THIRDPARTY_SOURCE_FILES
+-	${TP_EXPAT_PATH}/xmlparse.c
+-	${TP_EXPAT_PATH}/xmlrole.c
+-	${TP_EXPAT_PATH}/xmltok.c
+-	${ZUID_SOURCE_FILES}
+-	)
+-if(WIN32)
+-	list (APPEND THIRDPARTY_SOURCE_FILES ${RESOURCE_ROOT}/win/expat_config.h)
+-else()
+-	list (APPEND THIRDPARTY_SOURCE_FILES ${RESOURCE_ROOT}/${XMP_PLATFORM_SHORT}/expat_config.h)
+-endif()
+-source_group("Source Files\\Third Party" FILES ${THIRDPARTY_SOURCE_FILES})
+ 
+ list (APPEND UTILITY_SOURCE_FILES
+ 	${SOURCE_ROOT}/ExpatAdapter.cpp
+@@ -155,7 +143,6 @@ endif()
+ # include directories
+ include_directories(${XMPROOT_DIR})
+ include_directories(${XMPROOT_DIR}/public/include)
+-include_directories(${XMPROOT_DIR}/third-party/expat/public/lib)
+ include_directories(${RESOURCE_ROOT}/${XMP_PLATFORM_SHORT})
+ if(UNIX AND NOT APPLE AND NOT ${XMP_BUILD_STATIC})
+ include_directories(${XMPROOT_DIR}/XMPCore/third-party/boost)
+@@ -170,6 +157,8 @@ endif ()
+ #additional link directory
+ link_directories(${OUTPUT_DIR})
+ 
++find_package(expat CONFIG REQUIRED)
++
+ # ==============================================================================
+ # Define what to do, lib, exe, etc 
+ if (UNIX AND APPLE AND NOT ${XMP_BUILD_STATIC})
+@@ -253,6 +242,8 @@ else(WIN32)
+ 	endif()
+ endif()
+ 
++target_link_libraries(${TARGET_NAME} PRIVATE expat::expat)
++
+ # ==============================================================================
+ # Define output
+ SetOutputPath(${OUTPUT_DIR} 0)
+diff --git a/XMPCore/source/ExpatAdapter.cpp b/XMPCore/source/ExpatAdapter.cpp
+index 4e86bd0..15ed008 100644
+--- a/XMPCore/source/ExpatAdapter.cpp
++++ b/XMPCore/source/ExpatAdapter.cpp
+@@ -12,7 +12,7 @@
+ #include "source/ExpatAdapter.hpp"
+ #include "XMPCore/source/XMPMeta.hpp"
+ 
+-#include "third-party/expat/lib/expat.h"
++#include <expat.h>
+ #include <string.h>
+ 
+ using namespace std;
+diff --git a/XMPFiles/build/CMakeLists.txt b/XMPFiles/build/CMakeLists.txt
+index 399a461..df14803 100644
+--- a/XMPFiles/build/CMakeLists.txt
++++ b/XMPFiles/build/CMakeLists.txt
+@@ -48,7 +48,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/${XMP_THIS_PROJECT_RELATIVEPATH}/build/XMP_C
+ 
+ 
+ set(TP_ZUID_PATH "${XMPROOT_DIR}/third-party/zuid/interfaces")
+-set(TP_EXPAT_PATH "${PROJECT_ROOT}/../../third-party/expat/lib/")
+ set(LIB_ADOBEXMP XMPCore)
+ 
+ if(ANDROID)
+diff --git a/XMPFiles/build/CMakeListsCommon.txt b/XMPFiles/build/CMakeListsCommon.txt
+index ce3b9c7..91c23e9 100644
+--- a/XMPFiles/build/CMakeListsCommon.txt
++++ b/XMPFiles/build/CMakeListsCommon.txt
+@@ -65,20 +65,6 @@ list (APPEND PUBLIC_HEADER
+ 	)
+ source_group("Header Files\\Public Headers" FILES ${PUBLIC_HEADER})
+ 
+-file (GLOB HEADERFILES_THIRDPARTY_ZLIB ${XMPROOT_DIR}/third-party/zlib/*.h)
+-list (REMOVE_ITEM HEADERFILES_THIRDPARTY_ZLIB
+-	${CMAKE_CURRENT_SOURCE_DIR}/${XMPROOT_DIR}/third-party/zlib/gzguts.h
+-	)
+-source_group("Header Files\\ThirdParty\\zlib" FILES ${HEADERFILES_THIRDPARTY_ZLIB})
+-
+-list (APPEND FILES_THIRDPARTY_EXPAT
+-	${TP_EXPAT_PATH}/xmlparse.c
+-	${TP_EXPAT_PATH}/xmlrole.c
+-	${TP_EXPAT_PATH}/xmltok.c
+-	)
+-list (APPEND FILES_THIRDPARTY_EXPAT ${RESOURCE_ROOT}/../../XMPCore/resource/${XMP_PLATFORM_SHORT}/expat_config.h)
+-source_group("Source Files\\ThirdParty\\expat" FILES ${FILES_THIRDPARTY_EXPAT})
+-
+ list (APPEND HEADERFILES
+ 	${XMPROOT_DIR}/source/Host_IO.hpp
+ 	${XMPROOT_DIR}/source/XIO.hpp
+@@ -174,20 +160,6 @@ file (GLOB PUBLIC_XMPCORE_CLIENTGLUE_FILES ${XMPROOT_DIR}/public/include/XMPCore
+ source_group("Source Files\\Public\\XMPCore" FILES ${PUBLIC_XMPCORE_CLIENTGLUE_FILES})
+ endif()
+ #endif()
+-list (APPEND HEADERFILES_THIRDPARTY_ZLIB
+-	${XMPROOT_DIR}/third-party/zlib/adler32.c
+-	${XMPROOT_DIR}/third-party/zlib/compress.c
+-	${XMPROOT_DIR}/third-party/zlib/crc32.c
+-	${XMPROOT_DIR}/third-party/zlib/deflate.c
+-	${XMPROOT_DIR}/third-party/zlib/infback.c
+-	${XMPROOT_DIR}/third-party/zlib/inffast.c
+-	${XMPROOT_DIR}/third-party/zlib/inflate.c
+-	${XMPROOT_DIR}/third-party/zlib/inftrees.c
+-	${XMPROOT_DIR}/third-party/zlib/trees.c
+-	${XMPROOT_DIR}/third-party/zlib/uncompr.c
+-	${XMPROOT_DIR}/third-party/zlib/zutil.c
+-	)
+-source_group("Source Files\\ThirdParty\\zlib" FILES ${HEADERFILES_THIRDPARTY_ZLIB})
+ 
+ list(APPEND SOURCE_FILES
+ 	${INTERNAL_HEADER_COMMONCODE_NMDS}
+@@ -200,7 +172,6 @@ list(APPEND SOURCE_FILES
+ 	${INTERNAL_HEADER_PLUGINHANDLER}
+ 	${PUBLIC_HEADER_CLIENTGLUE}
+ 	${PUBLIC_HEADER}
+-	${HEADERFILES_THIRDPARTY_ZLIB}
+ 	${HEADERFILES}
+ 	${RESOURCE_FILES}
+ 	${SOURCEFILES_COMMONCODE_NMDS}
+@@ -213,8 +184,6 @@ list(APPEND SOURCE_FILES
+ 	${SOURCEFILES_PLUGINHANDLER}
+ 	${PUBLIC_XMPCOMMON_CLIENTGLUE_FILES}
+ 	${PUBLIC_XMPCORE_CLIENTGLUE_FILES}
+-	${HEADERFILES_THIRDPARTY_ZLIB}
+-	${FILES_THIRDPARTY_EXPAT}
+ 	)
+ 
+ # include directories
+@@ -222,14 +191,15 @@ include_directories(${XMPROOT_DIR})
+ include_directories(${XMPROOT_DIR}/public/include)
+ include_directories(${XMPROOT_DIR}/public/include/client-glue)
+ 
+-include_directories(${TP_EXPAT_PATH})
+-include_directories(${XMPROOT_DIR}/third-party/expat/public/lib)
+ include_directories(${XMPROOT_DIR}/XMPFilesPlugins/api/source)
+ include_directories(${RESOURCE_ROOT}/${XMP_PLATFORM_SHORT})
+ 
+ #additional link directory
+ link_directories(${OUTPUT_DIR})
+ 
++find_package(expat CONFIG REQUIRED)
++find_package(ZLIB REQUIRED)
++
+ # ==============================================================================
+ # Define what to do, lib, exe, etc
+ if (UNIX AND APPLE AND NOT ${XMP_BUILD_STATIC})
+@@ -291,6 +261,7 @@ AddLibraryAndDependencies(${TARGET_NAME} ${XMP_BUILD_STATIC} YES "SHARED" SOURCE
+ if(WIN32)
+ 	target_link_libraries(
+ 		${TARGET_NAME}
++		PRIVATE
+ 		${LIB_ADOBEXMP}
+ 		${XMP_PLATFORM_LINK}
+ 	)
+@@ -298,6 +269,7 @@ else(WIN32)
+ 	if(UNIX AND NOT APPLE)
+ 		target_link_libraries(
+ 			${TARGET_NAME}
++			PRIVATE
+             ${LIB_ADOBEXMP}
+ 		)
+ 	endif()
+@@ -327,6 +299,9 @@ endif()
+ 
+ set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME  ${XMPFILES_LIB})
+ 
++target_link_libraries(${TARGET_NAME} PRIVATE expat::expat)
++target_link_libraries(${TARGET_NAME} PRIVATE ZLIB::ZLIB)
++
+ # ==============================================================================
+ # Define output for this project
+ SetOutputPath(${OUTPUT_DIR} 0)
+diff --git a/XMPFiles/source/FileHandlers/SVG_Handler.hpp b/XMPFiles/source/FileHandlers/SVG_Handler.hpp
+index f42857a..2130fa4 100644
+--- a/XMPFiles/source/FileHandlers/SVG_Handler.hpp
++++ b/XMPFiles/source/FileHandlers/SVG_Handler.hpp
+@@ -25,7 +25,7 @@
+ #include "XMPFiles/source/XMPFiles_Impl.hpp"
+ #include "XMPFiles/source/FormatSupport/SVG_Adapter.hpp"
+ 
+-#include "third-party/zlib/zlib.h"
++#include <zlib.h>
+ 
+ extern XMPFileHandler* SVG_MetaHandlerCTor( XMPFiles* parent );
+ 
+diff --git a/XMPFiles/source/FileHandlers/UCF_Handler.cpp b/XMPFiles/source/FileHandlers/UCF_Handler.cpp
+index 561c5b3..66c783a 100644
+--- a/XMPFiles/source/FileHandlers/UCF_Handler.cpp
++++ b/XMPFiles/source/FileHandlers/UCF_Handler.cpp
+@@ -18,7 +18,7 @@
+ 
+ #include "XMPFiles/source/FileHandlers/UCF_Handler.hpp"
+ 
+-#include "third-party/zlib/zlib.h"
++#include <zlib.h>
+ 
+ #include <time.h>
+ 
+diff --git a/XMPFiles/source/FormatSupport/SVG_Adapter.cpp b/XMPFiles/source/FormatSupport/SVG_Adapter.cpp
+index 0607c45..33da023 100644
+--- a/XMPFiles/source/FormatSupport/SVG_Adapter.cpp
++++ b/XMPFiles/source/FormatSupport/SVG_Adapter.cpp
+@@ -17,7 +17,7 @@
+ 
+ #include "XMPFiles/source/FormatSupport/SVG_Adapter.hpp"
+ 
+-#include "third-party/expat/lib/expat.h"
++#include <expat.h>
+ #include <string.h>
+ 
+ using namespace std;
+diff --git a/XMPFiles/source/FormatSupport/SWF_Support.cpp b/XMPFiles/source/FormatSupport/SWF_Support.cpp
+index 57af239..96fa1b3 100644
+--- a/XMPFiles/source/FormatSupport/SWF_Support.cpp
++++ b/XMPFiles/source/FormatSupport/SWF_Support.cpp
+@@ -18,7 +18,7 @@
+ 
+ #include "XMPFiles/source/FormatSupport/SWF_Support.hpp"
+ 
+-#include "third-party/zlib/zlib.h"
++#include <zlib.h>
+ 
+ // =================================================================================================
+ 
+diff --git a/XMPFiles/source/FormatSupport/SWF_Support.hpp b/XMPFiles/source/FormatSupport/SWF_Support.hpp
+index 2adcd0a..2a59da2 100644
+--- a/XMPFiles/source/FormatSupport/SWF_Support.hpp
++++ b/XMPFiles/source/FormatSupport/SWF_Support.hpp
+@@ -17,7 +17,7 @@
+ 
+ #include "XMPFiles/source/XMPFiles_Impl.hpp"
+ 
+-#include "third-party/zlib/zlib.h"
++#include <zlib.h>
+ 
+ // =================================================================================================
+ 
