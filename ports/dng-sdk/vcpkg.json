@@ -1,0 +1,19 @@
+{ 
+  "name": "dng-sdk",
+  "version": "1.6",
+  "port-version": 0,
+  "description": "Adobe DNG SDK",
+  "homepage": "https://helpx.adobe.com/camera-raw/digital-negative.html",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "xmp-sdk",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
+}
