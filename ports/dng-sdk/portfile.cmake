@@ -10,6 +10,9 @@ vcpkg_extract_source_archive(
 	ARCHIVE "${ARCHIVE}"
 )
 
+file(REMOVE_RECURSE "${SOURCE_PATH}/libjpeg/" "${SOURCE_PATH}/xmp/")
+file(REMOVE "${SOURCE_PATH}/JPEG_ReadMe.txt" "${SOURCE_PATH}/XMP_ReadMe.txt")
+
 file(COPY "${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt" DESTINATION "${SOURCE_PATH}")
 
 vcpkg_cmake_configure(

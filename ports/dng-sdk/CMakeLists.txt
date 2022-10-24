@@ -1,12 +1,9 @@
-cmake_minimum_required( VERSION 3.12 )
-project(dngsdk)
+cmake_minimum_required(VERSION 3.12)
+project(dng-sdk)
 
-file(REMOVE_RECURSE libjpeg/ xmp/)
-
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_STANDARD 14)
 
-#find_package(xmp-sdk REQUIRED)
+# find_package(xmp-sdk REQUIRED)
 find_package(zlib REQUIRED)
 
 #include_directories(${XMP_SDK_INCLUDE_DIRS})
@@ -166,7 +163,7 @@ list(TRANSFORM SOURCE_FILES PREPEND ${SOURCE_DIR})
 source_group("Headers" FILES ${HEADER_FILES} )
 source_group("Sources" FILES ${SOURCE_FILES} )
 
-add_library(dngsdk STATIC ${SOURCE_FILES})
+add_library(dng-sdk STATIC ${SOURCE_FILES})
 
 # JPEG
 option(jpeg "use libjpeg (required for JPEG compression)" ON)
@@ -179,28 +176,28 @@ if(JPEG_FOUND)
 endif()
 
 if (WIN32)
-	target_compile_definitions(dngsdk PUBLIC qWinOS=1)
+	target_compile_definitions(dng-sdk PUBLIC qWinOS=1)
 endif()
 if (APPLE)
-	target_compile_definitions(dngsdk PUBLIC qMacOS=1)
+	target_compile_definitions(dng-sdk PUBLIC qMacOS=1)
 endif()
 
-target_include_directories(dngsdk PUBLIC ${ZLIB_INCLUDE_DIR})
+target_include_directories(dng-sdk PUBLIC ${ZLIB_INCLUDE_DIR})
 
 if (JPEG_INCLUDE_DIR)
-	target_include_directories(dngsdk PUBLIC ${JPEG_INCLUDE_DIR})
-	target_compile_definitions(dngsdk PUBLIC qDNGUseLibJPEG=1)
+	target_include_directories(dng-sdk PUBLIC ${JPEG_INCLUDE_DIR})
+	target_compile_definitions(dng-sdk PUBLIC qDNGUseLibJPEG=1)
 endif()
 
 if (MSVC)
-	target_compile_definitions(dngsdk PUBLIC _CRT_SECURE_NO_WARNINGS)
+	target_compile_definitions(dng-sdk PUBLIC _CRT_SECURE_NO_WARNINGS)
 endif()
 
 install(FILES ${HEADER_FILES}
     DESTINATION include
 )
 
-install(TARGETS dngsdk
+install(TARGETS dng-sdk
 	RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib

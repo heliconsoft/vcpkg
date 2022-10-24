@@ -16,5 +16,11 @@
       "name": "vcpkg-cmake-config",
       "host": true
     }
-  ]
+  ],
+  "features": {
+    "jpeg": {
+        "description": "use JPEG",
+        "dependencies": [ "libjpeg-turbo" ]
+    }
+  }
 }
