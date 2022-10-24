@@ -20,20 +20,18 @@ vcpkg_cmake_configure(
 )
 
 # vcpkg_cmake_install(), vcpkg_install_msbuild() do not work because XMP's custom CMakeLists do not provide install target
-vcpkg_cmake_build()
+
+# ${SOURCE_PATH}/XMPToolkitSDK.sln - points to a clean source tree
+vcpkg_build_msbuild(
+    PROJECT_PATH XMPToolkitSDK.sln
+    # TARGET ALL_BUILD
+    USE_VCPKG_INTEGRATION
+)
 
 vcpkg_copy_pdbs()
 
-# vcpkg_cmake_config_fixup(CONFIG_PATH "lib/share/${PORT}")
+file(INSTALL "${SOURCE_PATH}/public/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
+file(INSTALL "${SOURCE_PATH}/public/libraries/windows_x64/Debug/" DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib")
+file(INSTALL "${SOURCE_PATH}/public/libraries/windows_x64/Release/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib")
 
-# if(VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
-#     file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/libdshowcapture.dll" DESTINATION "${CURRENT_PACKAGES_DIR}/debug/bin")
-#     file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/libdshowcapture.dll" DESTINATION "${CURRENT_PACKAGES_DIR}/bin")
-# elseif(VCPKG_LIBRARY_LINKAGE STREQUAL static)
-#     file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/libdshowcapture.lib" DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib")
-#     file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/libdshowcapture.lib" DESTINATION "${CURRENT_PACKAGES_DIR}/lib")
-# endif()
-# file(INSTALL "${SOURCE_PATH}/dshowcapture.hpp" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
-
-#file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
