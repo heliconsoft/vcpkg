@@ -1,7 +1,18 @@
 cmake_minimum_required( VERSION 3.12 )
 project(dngsdk)
 
+file(REMOVE_RECURSE libjpeg/ xmp/)
+
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_STANDARD 14)
+
+#find_package(xmp-sdk REQUIRED)
+find_package(zlib REQUIRED)
+
+#include_directories(${XMP_SDK_INCLUDE_DIRS})
+include_directories(${ZLIB_INCLUDE_DIRS})
+
+set(SOURCE_DIR dng_sdk/source/)
 
 set(HEADER_FILES dng_1d_function.h
 dng_1d_table.h
@@ -149,8 +160,6 @@ dng_tone_curve.cpp
 dng_utils.cpp
 dng_xy_coord.cpp)
 
-set(SOURCE_DIR dng_sdk/source/)
-
 list(TRANSFORM HEADER_FILES PREPEND ${SOURCE_DIR})
 list(TRANSFORM SOURCE_FILES PREPEND ${SOURCE_DIR})
 
@@ -187,13 +196,12 @@ if (MSVC)
 	target_compile_definitions(dngsdk PUBLIC _CRT_SECURE_NO_WARNINGS)
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
-
 install(FILES ${HEADER_FILES}
     DESTINATION include
 )
 
 install(TARGETS dngsdk
+	RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )
