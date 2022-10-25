@@ -4,10 +4,7 @@ project(dng-sdk)
 set(CMAKE_CXX_STANDARD 14)
 
 # find_package(xmp-sdk REQUIRED)
-find_package(zlib REQUIRED)
-
-#include_directories(${XMP_SDK_INCLUDE_DIRS})
-include_directories(${ZLIB_INCLUDE_DIRS})
+find_package(zlib REQUIRED) #required in dng_big_table.cpp
 
 set(SOURCE_DIR dng_sdk/source/)
 
@@ -182,7 +179,7 @@ if (APPLE)
 	target_compile_definitions(dng-sdk PUBLIC qMacOS=1)
 endif()
 
-target_include_directories(dng-sdk PUBLIC ${ZLIB_INCLUDE_DIR})
+target_include_directories(dng-sdk PRIVATE ${ZLIB_INCLUDE_DIR})
 
 if (JPEG_INCLUDE_DIR)
 	target_include_directories(dng-sdk PUBLIC ${JPEG_INCLUDE_DIR})
@@ -192,6 +189,8 @@ endif()
 if (MSVC)
 	target_compile_definitions(dng-sdk PUBLIC _CRT_SECURE_NO_WARNINGS)
 endif()
+
+target_compile_definitions(dng-sdk PUBLIC qDNGUseXMP=1)
 
 install(FILES ${HEADER_FILES}
     DESTINATION include
