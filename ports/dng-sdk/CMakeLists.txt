@@ -3,8 +3,9 @@ project(dng-sdk)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# find_package(xmp-sdk REQUIRED)
 find_package(zlib REQUIRED) #required in dng_big_table.cpp
+find_package(jpeg REQUIRED)
+find_package(xmp-sdk REQUIRED)
 
 set(SOURCE_DIR dng_sdk/source/)
 
@@ -41,6 +42,8 @@ dng_image_writer.h
 dng_info.h
 dng_iptc.h
 dng_jpeg_image.h
+dng_jpeg_memory_source.h
+dng_jpeglib.h
 dng_lens_correction.h
 dng_linearization_info.h
 dng_local_string.h
@@ -84,8 +87,10 @@ dng_tile_iterator.h
 dng_tone_curve.h
 dng_types.h
 dng_uncopyable.h
+dng_update_meta.h
 dng_utils.h
 dng_xmp.h
+dng_xmp_sdk.h
 dng_xy_coord.h)
 
 set(SOURCE_FILES dng_1d_function.cpp
@@ -114,10 +119,12 @@ dng_image_writer.cpp
 dng_info.cpp
 dng_iptc.cpp
 dng_jpeg_image.cpp
+dng_jpeg_memory_source.cpp
 dng_lens_correction.cpp
 dng_linearization_info.cpp
 dng_local_string.cpp
 dng_lossless_jpeg.cpp
+dng_lossless_jpeg_shared.cpp
 dng_matrix.cpp
 dng_memory.cpp
 dng_memory_stream.cpp
@@ -151,7 +158,11 @@ dng_tag_types.cpp
 dng_temperature.cpp
 dng_tile_iterator.cpp
 dng_tone_curve.cpp
+dng_update_meta.cpp
 dng_utils.cpp
+dng_validate.cpp
+dng_xmp.cpp
+dng_xmp_sdk.cpp
 dng_xy_coord.cpp)
 
 list(TRANSFORM HEADER_FILES PREPEND ${SOURCE_DIR})
@@ -161,16 +172,6 @@ source_group("Headers" FILES ${HEADER_FILES} )
 source_group("Sources" FILES ${SOURCE_FILES} )
 
 add_library(dng-sdk STATIC ${SOURCE_FILES})
-
-# JPEG
-option(jpeg "use libjpeg (required for JPEG compression)" ON)
-if (jpeg)
- 	find_package(JPEG)
-endif()
-set(JPEG_SUPPORT FALSE)
-if(JPEG_FOUND)
-	set(JPEG_SUPPORT TRUE)
-endif()
 
 if (WIN32)
 	target_compile_definitions(dng-sdk PUBLIC qWinOS=1)
@@ -190,7 +191,9 @@ if (MSVC)
 	target_compile_definitions(dng-sdk PUBLIC _CRT_SECURE_NO_WARNINGS)
 endif()
 
+#use xmp and jpeg unconditionally for now
 target_compile_definitions(dng-sdk PUBLIC qDNGUseXMP=1)
+target_compile_definitions(dng-sdk PUBLIC qDNGUseLibJPEG=1)
 
 install(FILES ${HEADER_FILES}
     DESTINATION include
