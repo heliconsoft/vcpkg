@@ -30,7 +30,7 @@ vcpkg_build_msbuild(
 
 vcpkg_copy_pdbs()
 
-file(INSTALL "${SOURCE_PATH}/public/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include")
+file(INSTALL "${SOURCE_PATH}/public/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include/xmp")
 file(INSTALL "${SOURCE_PATH}/public/libraries/windows_x64/Debug/" DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib")
 file(INSTALL "${SOURCE_PATH}/public/libraries/windows_x64/Release/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib")
 
