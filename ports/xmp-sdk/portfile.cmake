@@ -33,7 +33,7 @@ vcpkg_copy_pdbs()
 file(INSTALL "${SOURCE_PATH}/public/include/" DESTINATION "${CURRENT_PACKAGES_DIR}/include/xmp")
 file(INSTALL "${SOURCE_PATH}/public/libraries/windows_x64/Debug/" DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib")
 file(INSTALL "${SOURCE_PATH}/public/libraries/windows_x64/Release/" DESTINATION "${CURRENT_PACKAGES_DIR}/lib")
-file(INSTALL ${CMAKE_CURRENT_LIST_DIR}/xmp-sdk-config.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
+file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/xmp-sdk-config.cmake" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
