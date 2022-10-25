@@ -15,6 +15,10 @@ file(REMOVE "${SOURCE_PATH}/JPEG_ReadMe.txt" "${SOURCE_PATH}/XMP_ReadMe.txt")
 
 file(COPY "${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt" DESTINATION "${SOURCE_PATH}")
 
+#TODO: check and pass optional features
+#if("jpeg" IN_LIST FEATURES)
+#if("xmp" IN_LIST FEATURES)
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
 )

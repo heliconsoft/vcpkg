@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
-project(dng-sdk)
+project(dng-sdk CXX) # sets PROJECT_NAME variable
 
+set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_CXX_STANDARD 14)
+
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 find_package(zlib REQUIRED) #required in dng_big_table.cpp
 find_package(jpeg REQUIRED)
@@ -171,8 +175,6 @@ list(TRANSFORM SOURCE_FILES PREPEND ${SOURCE_DIR})
 source_group("Headers" FILES ${HEADER_FILES} )
 source_group("Sources" FILES ${SOURCE_FILES} )
 
-add_library(dng-sdk STATIC ${SOURCE_FILES})
-
 if (WIN32)
 	target_compile_definitions(dng-sdk PUBLIC qWinOS=1)
 endif()
@@ -194,6 +196,8 @@ endif()
 #use xmp and jpeg unconditionally for now
 target_compile_definitions(dng-sdk PUBLIC qDNGUseXMP=1)
 target_compile_definitions(dng-sdk PUBLIC qDNGUseLibJPEG=1)
+
+#set qDNGDebug in debug builds?
 
 install(FILES ${HEADER_FILES}
     DESTINATION include

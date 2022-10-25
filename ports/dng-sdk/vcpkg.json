@@ -19,8 +19,12 @@
   ],
   "features": {
     "jpeg": {
-        "description": "use JPEG",
-        "dependencies": [ "libjpeg-turbo" ]
+      "description": "use JPEG",
+      "dependencies": [ "libjpeg-turbo" ]
+    },
+    "xmp": {
+      "description": "XMP support",
+      "dependencies": [ "xmp-sdk" ]
     }
   }
 }
