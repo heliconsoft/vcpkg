@@ -20,6 +20,7 @@ set_target_properties(xmp-sdk::xmp-sdk-files PROPERTIES
 )
 
 add_library(xmp-sdk::xmp-sdk INTERFACE IMPORTED)
+#umbrella virtual target to link both core and files libraries
 target_link_libraries(xmp-sdk::xmp-sdk INTERFACE xmp-sdk::xmp-sdk-core xmp-sdk::xmp-sdk-files)
 
 #When target dependencies are specified using target_link_libraries(), CMake will read this property from all target dependencies to determine the build properties of the consumer. 
