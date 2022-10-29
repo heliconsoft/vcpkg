@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 project(dng-sdk VERSION 1.6 LANGUAGES CXX) # sets PROJECT_NAME variable
 
-# set(CMAKE_DEBUG_POSTFIX d)
-
 option(DNG_USE_XMP_EXTERNAL "Use external XMP SDK toolkit" ON)
 option(DNG_USE_JPEG "Use JPEG" ON)
-
-message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
 
 add_library(${PROJECT_NAME})
 # add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -73,7 +69,6 @@ set(HEADER_FILES
 	dng_sdk/source/dng_xy_coord.h
 )
 
-
 if (WIN32)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC qWinOS=1)
 endif()
@@ -88,30 +83,23 @@ endif()
 #set qDNGDebug in debug builds?
 
 install(TARGETS ${PROJECT_NAME}
-	EXPORT ${PROJECT_NAME}-targets
+	EXPORT ${PROJECT_NAME}_targets
 	RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
+    INCLUDES DESTINATION include
 )
 
-foreach (HEADER ${HEADER_FILES})
-	get_filename_component(HEADER_DIR ${HEADER} DIRECTORY)
-	install(
-		FILES ${HEADER}
-		CONFIGURATIONS Release
-		DESTINATION include/dng-sdk
-	)
-endforeach()
+install(FILES ${HEADER_FILES} DESTINATION include/dng-sdk)
 
-set(INSTALL_CONFIG_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/dng-sdk")
+include(CMakePackageConfigHelpers)
 
-install(
-    EXPORT ${PROJECT_NAME}-targets
-    FILE ${PROJECT_NAME}-targets.cmake
-    DESTINATION "${INSTALL_CONFIG_DIR}"
-)
+set(CONFIG_INSTALL_DIR "share/${PROJECT_NAME}")
+set(PROJECT_CONFIG "${CMAKE_CURRENT_BINARY_DIR}/temp/${PROJECT_NAME}-config.cmake")
 
-# include(CMakePackageConfigHelpers)
-# configure_package_config_file(
-# )
-# include(CPack)
+configure_package_config_file("config.cmake.in" "${PROJECT_CONFIG}" INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}")
+install(FILES "${PROJECT_CONFIG}" DESTINATION "${CONFIG_INSTALL_DIR}")
+
+install(EXPORT ${PROJECT_NAME}_targets
+	NAMESPACE dng-sdk::
+	DESTINATION "${CONFIG_INSTALL_DIR}")
