@@ -18,12 +18,20 @@ file(COPY
 	"${CMAKE_CURRENT_LIST_DIR}/config.cmake.in"
 	DESTINATION "${SOURCE_PATH}")
 
+vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
+	FEATURES
+		jpeg DNG_USE_JPEG
+		xmp DNG_USE_XMP_EXTERNAL
+)
+
 #TODO: check and pass optional features
 #if("jpeg" IN_LIST FEATURES)
 #if("xmp" IN_LIST FEATURES)
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
+    OPTIONS
+    	${FEATURE_OPTIONS}
 )
 
 vcpkg_cmake_install()

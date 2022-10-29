@@ -6,7 +6,6 @@
   "homepage": "https://helpx.adobe.com/camera-raw/digital-negative.html",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "xmp-sdk",
     "zlib",
     {
       "name": "vcpkg-cmake",
@@ -17,6 +16,7 @@
       "host": true
     }
   ],
+  "default-features": [ "jpeg", "xmp" ],
   "features": {
     "jpeg": {
       "description": "use JPEG",
