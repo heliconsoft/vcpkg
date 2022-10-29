@@ -5,7 +5,7 @@ get_filename_component(ROOT "${CMAKE_CURRENT_LIST_FILE}" PATH)
 get_filename_component(ROOT "${ROOT}" PATH)
 get_filename_component(ROOT "${ROOT}" PATH)
 
-find_dependency(EXPAT)
+find_dependency(expat CONFIG)
 
 add_library(xmp-sdk::xmp-sdk-core STATIC IMPORTED)
 set_target_properties(xmp-sdk::xmp-sdk-core PROPERTIES
@@ -14,7 +14,7 @@ set_target_properties(xmp-sdk::xmp-sdk-core PROPERTIES
 	IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
 	INTERFACE_INCLUDE_DIRECTORIES "${ROOT}/include/xmp"
 )
-target_link_libraries(xmp-sdk::xmp-sdk-core INTERFACE EXPAT::EXPAT)
+target_link_libraries(xmp-sdk::xmp-sdk-core INTERFACE expat::expat)
 
 add_library(xmp-sdk::xmp-sdk-files STATIC IMPORTED)
 set_target_properties(xmp-sdk::xmp-sdk-files PROPERTIES
@@ -23,7 +23,7 @@ set_target_properties(xmp-sdk::xmp-sdk-files PROPERTIES
     IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
     INTERFACE_INCLUDE_DIRECTORIES "${ROOT}/include/xmp"
 )
-target_link_libraries(xmp-sdk::xmp-sdk-files INTERFACE EXPAT::EXPAT)
+target_link_libraries(xmp-sdk::xmp-sdk-files INTERFACE expat::expat)
 
 add_library(xmp-sdk::xmp-sdk INTERFACE IMPORTED)
 #umbrella virtual target to link both core and files libraries

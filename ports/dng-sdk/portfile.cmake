@@ -24,10 +24,6 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
 		xmp DNG_USE_XMP_EXTERNAL
 )
 
-#TODO: check and pass optional features
-#if("jpeg" IN_LIST FEATURES)
-#if("xmp" IN_LIST FEATURES)
-
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
