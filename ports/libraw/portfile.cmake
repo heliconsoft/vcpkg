@@ -44,6 +44,16 @@ vcpkg_copy_pdbs()
 vcpkg_fixup_cmake_targets()
 vcpkg_fixup_pkgconfig()
 
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libraw/libraw_types.h"
+        "#ifdef LIBRAW_NODLL" "#if 1"
+    )
+else()
+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libraw/libraw_types.h"
+        "#ifdef LIBRAW_NODLL" "#if 0"
+    )
+endif()
+
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
 
 file(INSTALL "${SOURCE_PATH}/COPYRIGHT" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
