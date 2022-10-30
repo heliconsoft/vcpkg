@@ -12,6 +12,8 @@ vcpkg_from_github(
     REF 6e26c9e73677dc04f9eb236a97c6a4dc225ba7e8
     SHA512 8ce13d37c2ace2fbc57f571052a5a5a847b707b3de1b3b9e0c1a46afaca86cabd42ee275600eeadc3127bc2a0d0a4f224caed0b07feffdafea32ad0f42e50379
     HEAD_REF master
+    PATCHES
+        CMakeLists-dont-install-static-pdb.patch
 )
 
 file(COPY "${LIBRAW_CMAKE_SOURCE_PATH}/CMakeLists.txt" DESTINATION "${SOURCE_PATH}")
@@ -38,24 +40,10 @@ vcpkg_cmake_configure(
 )
 
 vcpkg_cmake_install()
-
 vcpkg_copy_pdbs()
-
 vcpkg_fixup_pkgconfig()
-
-# if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-#     vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libraw/libraw_types.h"
-#         "#ifdef LIBRAW_NODLL" "#if 1"
-#     )
-# else()
-#     vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libraw/libraw_types.h"
-#         "#ifdef LIBRAW_NODLL" "#if 0"
-#     )
-# endif()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake" "${CURRENT_PACKAGES_DIR}/share/${PORT}/vcpkg-cmake-wrapper.cmake" @ONLY)
-file(INSTALL "${CMAKE_CURRENT_LIST_DIR}/usage" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
 file(INSTALL "${SOURCE_PATH}/COPYRIGHT" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
 

@@ -1,0 +1,34 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 889fddf..fabd86f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -620,9 +620,7 @@ if (LIBRAW_INSTALL)
+            )
+ 
+ 
+-    if(NOT BUILD_SHARED_LIBS AND "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+-        message("ClangCl does not support pdb generation with static libraries")
+-    elseif(MSVC)
++    if(BUILD_SHARED_LIBS AND MSVC)
+         install(FILES ${PROJECT_BINARY_DIR}/raw.pdb ${PROJECT_BINARY_DIR}/raw_r.pdb
+                 DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                 CONFIGURATIONS Debug RelWithDebInfo
+@@ -664,15 +662,15 @@ if (LIBRAW_INSTALL)
+     configure_package_config_file(
+         cmake/${PROJECT_NAME}Config.cmake.in
+         cmake/${PROJECT_NAME}Config.cmake
+-        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/)
++        INSTALL_DESTINATION "share/${PROJECT_NAME}")
+ 
+     install(FILES
+         ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake
+         ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}ConfigVersion.cmake
+-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/)
++        DESTINATION "share/${PROJECT_NAME}")
+ 
+     install(EXPORT ${PROJECT_NAME}Targets
+-        NAMESPACE libraw:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/)
++        NAMESPACE libraw:: DESTINATION "share/${PROJECT_NAME}")
+ endif(LIBRAW_INSTALL)
+ 
+ # -- Compile LibRaw Examples --------------------------------------------------------------------------------
