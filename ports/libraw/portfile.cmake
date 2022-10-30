@@ -13,7 +13,7 @@ vcpkg_from_github(
     SHA512 8ce13d37c2ace2fbc57f571052a5a5a847b707b3de1b3b9e0c1a46afaca86cabd42ee275600eeadc3127bc2a0d0a4f224caed0b07feffdafea32ad0f42e50379
     HEAD_REF master
     PATCHES
-        CMakeLists-dont-install-static-pdb.patch
+        CMakeLists.patch
 )
 
 file(COPY "${LIBRAW_CMAKE_SOURCE_PATH}/CMakeLists.txt" DESTINATION "${SOURCE_PATH}")
