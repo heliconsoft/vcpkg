@@ -1,25 +1,17 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO LibRaw/LibRaw
-    REF d4f05dd1b9b2d44c8f7e82043cbad3c724db2416
-    SHA512 5794521f535163afd7815ad005295301c5e0e2f8b2f34ef0a911d9dd1572c1f456b292777548203f9767957a55782b5bc9041c033190d25d1e9b4240d7df32b9
+    REF 0.20.2
+    SHA512 09af68f95249da37357877c6013db5082edd9fd40d0526c42bba22f16a19f41d8c008cf16823f2ed9a90c2dee9c8cd2968c91a9550bf24b3b2c089918ae56250
     HEAD_REF master
-    PATCHES
-        remove_register_cpp.patch
 )
 
 vcpkg_from_github(
     OUT_SOURCE_PATH LIBRAW_CMAKE_SOURCE_PATH
     REPO LibRaw/LibRaw-cmake
-    REF a71f3b83ee3dccd7be32f9a2f410df4d9bdbde0a
-    SHA512 607e6f76bcb57534da4f0c864b7a421f1ed49244468b1b52abe77f65aa599cae80715520b3a951294321b812deffd4f163757c9949f337571aa54f414ccc58a5
+    REF 6e26c9e73677dc04f9eb236a97c6a4dc225ba7e8
+    SHA512 8ce13d37c2ace2fbc57f571052a5a5a847b707b3de1b3b9e0c1a46afaca86cabd42ee275600eeadc3127bc2a0d0a4f224caed0b07feffdafea32ad0f42e50379
     HEAD_REF master
-    PATCHES
-        findlibraw_debug_fix.patch
-        lcms2_debug_fix.patch
-        # Move the non-thread-safe library to manual-link. This is unfortunately needed
-        # because otherwise libraries that build on top of libraw have to choose.
-        fix-install.patch
 )
 
 file(COPY "${LIBRAW_CMAKE_SOURCE_PATH}/CMakeLists.txt" DESTINATION "${SOURCE_PATH}")
@@ -29,15 +21,20 @@ file(COPY "${LIBRAW_CMAKE_SOURCE_PATH}/cmake" DESTINATION "${SOURCE_PATH}")
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
         openmp ENABLE_OPENMP
+        lcms ENABLE_LCMS
+        jasper ENABLE_JASPER
+        rawspeed ENABLE_RAWSPEED
+        x3ftools ENABLE_X3FTOOLS
+        6by9rpi ENABLE_6BY9RPI
 )
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         ${FEATURE_OPTIONS}
-        -DINSTALL_CMAKE_MODULE_PATH=share/${PORT}
         -DENABLE_EXAMPLES=OFF
-        -DCMAKE_DEBUG_POSTFIX=d
+        -DENABLE_DCRAW_DEBUG=OFF
+        -DLIBRAW_INSTALL=ON
 )
 
 vcpkg_cmake_install()
@@ -46,15 +43,15 @@ vcpkg_copy_pdbs()
 
 vcpkg_fixup_pkgconfig()
 
-if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libraw/libraw_types.h"
-        "#ifdef LIBRAW_NODLL" "#if 1"
-    )
-else()
-    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libraw/libraw_types.h"
-        "#ifdef LIBRAW_NODLL" "#if 0"
-    )
-endif()
+# if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+#     vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libraw/libraw_types.h"
+#         "#ifdef LIBRAW_NODLL" "#if 1"
+#     )
+# else()
+#     vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/libraw/libraw_types.h"
+#         "#ifdef LIBRAW_NODLL" "#if 0"
+#     )
+# endif()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include" "${CURRENT_PACKAGES_DIR}/debug/share")
 

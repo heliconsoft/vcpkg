@@ -1,13 +1,19 @@
 {
   "name": "libraw",
-  "version-string": "201903",
-  "port-version": 10,
+  "version": "0.20.2",
+  "port-version": 0,
   "description": "raw image decoder library",
   "homepage": "https://www.libraw.org",
   "supports": "!uwp",
   "dependencies": [
-    "jasper",
-    "lcms",
+    {
+      "name": "zlib",
+      "$comment": "DNG deflate codec support"
+    },
+    {
+      "name": "libjpeg-turbo",
+      "$comment": "DNG lossy codec support"
+    },
     {
       "name": "vcpkg-cmake",
       "host": true
@@ -15,7 +21,25 @@
   ],
   "features": {
     "openmp": {
-      "description": "Build library with OpenMP support"
+      "description": "OpenMP support"
+    },
+    "lcms": {
+      "description": "LCMS support",
+      "dependencies": [ "lcms" ]
+    },
+    "jasper": {
+      "description": "RedCine codec support",
+      "dependencies": [ "jasper" ]
+    },
+    "rawspeed": {
+      "description": "RawSpeed codec support",
+      "dependencies": [ "libxml2" ]
+    },
+    "x3ftools": {
+      "description": "Foveon X3F support"
+    },
+    "6by9rpi": {
+      "description": "Raspberry Pi RAW support"
     }
   }
 }
