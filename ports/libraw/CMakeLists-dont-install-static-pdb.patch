@@ -1,8 +1,29 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 889fddf..fabd86f 100644
+index 889fddf..29d3244 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -620,9 +620,7 @@ if (LIBRAW_INSTALL)
+@@ -475,7 +475,7 @@ endif()
+ 
+ target_include_directories(raw
+         PUBLIC
+-            $<INSTALL_INTERFACE:libraw>
++            $<INSTALL_INTERFACE:include/libraw>
+             $<BUILD_INTERFACE:${LIBRAW_PATH}>)
+ 
+ target_link_libraries(raw PUBLIC ${MATH_LIBRARY})
+@@ -608,7 +608,6 @@ if (LIBRAW_INSTALL)
+                         ${LIBRAW_PATH}/libraw/libraw_version.h
+                         ${CMAKE_CURRENT_BINARY_DIR}/libraw_config.h
+             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libraw
+-            COMPONENT   Devel
+            )
+ 
+     # Install Shared binary files.
+@@ -617,12 +616,11 @@ if (LIBRAW_INSTALL)
+             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
             )
  
  
