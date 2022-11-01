@@ -1,0 +1,197 @@
+diff --git a/dng_sdk/source/dng_filter_task.h b/dng_sdk/source/dng_filter_task.h
+index 1c15174..2fbc578 100644
+--- a/dng_sdk/source/dng_filter_task.h
++++ b/dng_sdk/source/dng_filter_task.h
+@@ -24,6 +24,10 @@
+ #include "dng_rect.h"
+ #include "dng_sdk_limits.h"
+ 
++#include "dng_1d_table.h"
++#include "dng_matrix.h"
++#include "dng_hue_sat_map.h"
++
+ /*****************************************************************************/
+ 
+ /// \brief Represents a task which filters an area of a source dng_image to an area
+@@ -150,6 +154,73 @@ class dng_filter_task: public dng_area_task
+ 
+ /*****************************************************************************/
+ 
++class dng_render_task: public dng_filter_task
++{
++
++protected:
++
++	const dng_image *fSrcMask;
++
++	const dng_negative &fNegative;
++
++	const dng_render &fParams;
++	
++	dng_point fSrcOffset;
++	
++	dng_1d_table fZeroOffsetRamp;
++	
++	dng_vector fCameraWhite;
++	dng_matrix fCameraToRGB;
++	
++	AutoPtr<dng_hue_sat_map> fHueSatMap;
++
++	real64 fBaselineExposure = 0.0;
++	
++	dng_1d_table fExposureRamp;
++	
++	AutoPtr<dng_hue_sat_map> fLookTable;
++	
++	dng_1d_table fToneCurve;
++	
++	dng_matrix fRGBtoFinal;
++	
++	dng_1d_table fEncodeGamma;
++
++	AutoPtr<dng_1d_table> fHueSatMapEncode;
++	AutoPtr<dng_1d_table> fHueSatMapDecode;
++
++	AutoPtr<dng_1d_table> fLookTableEncode;
++	AutoPtr<dng_1d_table> fLookTableDecode;
++
++	AutoPtr<dng_memory_block> fTempBuffer [kMaxMPThreads];
++
++	AutoPtr<dng_memory_block> fMaskBuffer [kMaxMPThreads];
++	
++public:
++
++	dng_render_task (const dng_image &srcImage,
++					 const dng_image *srcMask,
++					 dng_image &dstImage,
++					 const dng_negative &negative,
++					 const dng_render &params,
++					 const dng_point &srcOffset);
++
++	virtual dng_rect SrcArea (const dng_rect &dstArea);
++		
++	virtual void Start (uint32 threadCount,
++						const dng_rect &dstArea,
++						const dng_point &tileSize,
++						dng_memory_allocator *allocator,
++						dng_abort_sniffer *sniffer);
++						
++	virtual void ProcessArea (uint32 threadIndex,
++							  dng_pixel_buffer &srcBuffer,
++							  dng_pixel_buffer &dstBuffer);
++	
++};
++
++/*****************************************************************************/
++
+ #endif
+ 	
+ /*****************************************************************************/
+diff --git a/dng_sdk/source/dng_negative.cpp b/dng_sdk/source/dng_negative.cpp
+index d538f97..acb97d0 100644
+--- a/dng_sdk/source/dng_negative.cpp
++++ b/dng_sdk/source/dng_negative.cpp
+@@ -4116,6 +4116,11 @@ const dng_image & dng_negative::RawImage () const
+ 		{
+ 		return *fStage1Image.Get ();
+ 		}
++
++	if (fStage2Image.Get ())
++		{
++		return *fStage2Image.Get ();
++		}
+ 		
+ 	if (fUnflattenedStage3Image.Get ())
+ 		{
+diff --git a/dng_sdk/source/dng_negative.h b/dng_sdk/source/dng_negative.h
+index efab72c..4a730c0 100644
+--- a/dng_sdk/source/dng_negative.h
++++ b/dng_sdk/source/dng_negative.h
+@@ -2646,6 +2646,9 @@ class dng_negative
+ 		// Returns the raw image data.
+ 		
+ 		const dng_image & RawImage () const;
++
++		// DNGWriter prefers fRawImage over Stage3Image, so we have to reset it
++		void ResetRawImage() { fRawImage.Reset(); }
+   
+ 		// Returns the raw image black level in 16-bit space.
+ 		
+diff --git a/dng_sdk/source/dng_render.cpp b/dng_sdk/source/dng_render.cpp
+index 42c2875..ceaa065 100644
+--- a/dng_sdk/source/dng_render.cpp
++++ b/dng_sdk/source/dng_render.cpp
+@@ -714,73 +714,6 @@ const dng_1d_function & dng_tone_curve_acr3_default::Get ()
+ 
+ /*****************************************************************************/
+ 
+-class dng_render_task: public dng_filter_task
+-	{
+-	
+-	protected:
+- 
+-		const dng_image *fSrcMask;
+-	
+-		const dng_negative &fNegative;
+-	
+-		const dng_render &fParams;
+-		
+-		dng_point fSrcOffset;
+-		
+-		dng_1d_table fZeroOffsetRamp;
+-		
+-		dng_vector fCameraWhite;
+-		dng_matrix fCameraToRGB;
+-		
+-		AutoPtr<dng_hue_sat_map> fHueSatMap;
+-
+-		real64 fBaselineExposure = 0.0;
+-		
+-		dng_1d_table fExposureRamp;
+-		
+-		AutoPtr<dng_hue_sat_map> fLookTable;
+-		
+-		dng_1d_table fToneCurve;
+-		
+-		dng_matrix fRGBtoFinal;
+-		
+-		dng_1d_table fEncodeGamma;
+-
+-		AutoPtr<dng_1d_table> fHueSatMapEncode;
+-		AutoPtr<dng_1d_table> fHueSatMapDecode;
+-
+-		AutoPtr<dng_1d_table> fLookTableEncode;
+-		AutoPtr<dng_1d_table> fLookTableDecode;
+-	
+-		AutoPtr<dng_memory_block> fTempBuffer [kMaxMPThreads];
+-  
+-		AutoPtr<dng_memory_block> fMaskBuffer [kMaxMPThreads];
+-		
+-	public:
+-	
+-		dng_render_task (const dng_image &srcImage,
+-						 const dng_image *srcMask,
+-						 dng_image &dstImage,
+-						 const dng_negative &negative,
+-						 const dng_render &params,
+-						 const dng_point &srcOffset);
+-	
+-		virtual dng_rect SrcArea (const dng_rect &dstArea);
+-			
+-		virtual void Start (uint32 threadCount,
+-							const dng_rect &dstArea,
+-							const dng_point &tileSize,
+-							dng_memory_allocator *allocator,
+-							dng_abort_sniffer *sniffer);
+-							
+-		virtual void ProcessArea (uint32 threadIndex,
+-								  dng_pixel_buffer &srcBuffer,
+-								  dng_pixel_buffer &dstBuffer);
+-		
+-	};
+-
+-/*****************************************************************************/
+-
+ dng_render_task::dng_render_task (const dng_image &srcImage,
+ 								  const dng_image *srcMask,
+ 								  dng_image &dstImage,

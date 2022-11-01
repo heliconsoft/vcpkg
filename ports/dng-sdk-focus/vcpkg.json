@@ -1,0 +1,30 @@
+{ 
+  "name": "dng-sdk-focus",
+  "version": "1.6",
+  "port-version": 0,
+  "description": "Adobe DNG SDK with private modifications",
+  "homepage": "https://helpx.adobe.com/camera-raw/digital-negative.html",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "zlib",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+  "default-features": [ "jpeg", "xmp" ],
+  "features": {
+    "jpeg": {
+      "description": "use JPEG",
+      "dependencies": [ "libjpeg-turbo" ]
+    },
+    "xmp": {
+      "description": "XMP support",
+      "dependencies": [ "xmp-sdk" ]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+#find_dependency(ZLIB)
+
+if (@DNG_USE_JPEG@)
+    find_dependency(JPEG)
+endif()
+
+if (@DNG_USE_XMP_EXTERNAL@)
+    find_dependency(xmp-sdk CONFIG)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/@TARGETS_EXPORT_NAME@.cmake")
+check_required_components("@PROJECT_NAME@")
