@@ -1,6 +1,6 @@
 {
   "name": "yopt",
-  "version": "0.9",
+  "version": "0.9.1",
   "description": "Yet another OPTions parser",
   "homepage": "https://github.com/cos-public/yopt",
   "license": "GPL-3.0-or-later",
