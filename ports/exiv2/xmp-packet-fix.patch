@@ -1,0 +1,74 @@
+diff --git a/src/image.cpp b/src/image.cpp
+index 2fa41e5b..ccde712a 100644
+--- a/src/image.cpp
++++ b/src/image.cpp
+@@ -631,10 +631,14 @@ namespace Exiv2 {
+     void Image::setXmpPacket(const std::string& xmpPacket)
+     {
+         xmpPacket_ = xmpPacket;
++#if EXV_HAVE_XMP_TOOLKIT
+         if ( XmpParser::decode(xmpData_, xmpPacket) ) {
+             throw Error(kerInvalidXMP);
+         }
+         xmpPacket_ = xmpPacket;
++#else
++        writeXmpFromPacket_ = true;
++#endif
+     }
+ 
+     void Image::clearXmpData()
+diff --git a/src/tiffvisitor_int.cpp b/src/tiffvisitor_int.cpp
+index 066e4fc5..524ccb1c 100644
+--- a/src/tiffvisitor_int.cpp
++++ b/src/tiffvisitor_int.cpp
+@@ -403,11 +403,15 @@ namespace Exiv2 {
+ #endif
+                 xmpPacket = xmpPacket.substr(idx);
+             }
++#if defined EXV_HAVE_XMP_TOOLKIT
+             if (XmpParser::decode(xmpData_, xmpPacket)) {
+ #ifndef SUPPRESS_WARNINGS
+                 EXV_WARNING << "Failed to decode XMP metadata.\n";
+ #endif
+             }
++#else
++            xmpData_.setPacket(xmpPacket);
++#endif
+         }
+     } // TiffDecoder::decodeXmp
+ 
+@@ -680,7 +684,6 @@ namespace Exiv2 {
+ 
+     void TiffEncoder::encodeXmp()
+     {
+-#ifdef EXV_HAVE_XMP_TOOLKIT
+         ExifKey xmpKey("Exif.Image.XMLPacket");
+         // Remove any existing XMP Exif tag
+         ExifData::iterator pos = exifData_.findKey(xmpKey);
+@@ -691,12 +694,16 @@ namespace Exiv2 {
+         std::string xmpPacket;
+         if ( xmpData_.usePacket() ) {
+             xmpPacket = xmpData_.xmpPacket();
+-        } else {
++        } else if (!xmpData_.empty()) {
++#ifdef EXV_HAVE_XMP_TOOLKIT
+             if (XmpParser::encode(xmpPacket, xmpData_) > 1) {
+ #ifndef SUPPRESS_WARNINGS
+                 EXV_ERROR << "Failed to encode XMP metadata.\n";
+-#endif
++#endif //SUPPRESS_WARNINGS
+             }
++#else
++            EXV_ERROR << "XMP toolkit support not compiled in.\n";
++#endif //EXV_HAVE_XMP_TOOLKIT
+         }
+         if (!xmpPacket.empty()) {
+             // Set the XMP Exif tag to the new value
+@@ -707,7 +714,6 @@ namespace Exiv2 {
+             Exifdatum xmpDatum(xmpKey, value.get());
+             exifData_.add(xmpDatum);
+         }
+-#endif
+     } // TiffEncoder::encodeXmp
+ 
+     void TiffEncoder::setDirty(bool flag)
